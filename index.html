@@ -1,0 +1,795 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Have a good Day</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Inter:wght@200;300;400;500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* 高级简约背景 */
+        .luxury-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.01) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            z-index: -1;
+        }
+
+        /* 欢迎界面 - 高级简约设计 */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .welcome-screen.hidden {
+            opacity: 0;
+            transform: translateY(-50px);
+            pointer-events: none;
+        }
+
+        .welcome-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 300;
+            color: #ffffff;
+            margin-bottom: 4rem;
+            letter-spacing: 0.05em;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInUp 1.5s ease-out 0.5s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            animation: fadeInUp 1.5s ease-out 1s forwards;
+        }
+
+        .input-label {
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 2rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .name-input {
+            width: 400px;
+            padding: 1.5rem 0;
+            font-size: 1.2rem;
+            font-weight: 300;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            text-align: center;
+            outline: none;
+            transition: all 0.6s ease;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.05em;
+        }
+
+        .name-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 200;
+        }
+
+        .name-input:focus {
+            border-bottom-color: rgba(255, 255, 255, 0.8);
+            transform: scale(1.02);
+        }
+
+        .start-btn {
+            margin-top: 3rem;
+            padding: 1rem 3rem;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.6s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .start-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* 消息弹窗 - 多彩设计 */
+        .message-popup {
+            position: fixed;
+            padding: 1.5rem 2rem;
+            backdrop-filter: blur(10px);
+            border: none; /* 无边框 */
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 100;
+            width: 260px; /* 缩小弹窗尺寸 */
+            min-height: 82px; /* 调整高度，文本更紧凑 */
+            display: flex; /* 居中文本 */
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-sizing: border-box;
+            overflow: hidden; /* 让涟漪动画在卡片内进行 */
+            font-family: 'Inter', sans-serif;
+            font-size: 1.05rem; /* 字体稍大 */
+            font-weight: 600;   /* 更粗更醒目 */
+            line-height: 1.4;
+            letter-spacing: 0.02em;
+            animation: colorfulAppear 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        @keyframes colorfulAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.7) translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .message-popup:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 点击涟漪效果 */
+        .message-popup::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.85);
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .message-popup.clicked::after {
+            animation: ripple 600ms ease-out;
+        }
+
+        @keyframes ripple {
+            0% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+            70% { opacity: 0.2; transform: translate(-50%, -50%) scale(20); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(26); }
+        }
+
+        .message-popup.removing {
+            animation: elegantDisappear 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        @keyframes elegantDisappear {
+            0% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1) rotate(0deg); }
+            60% { opacity: 0.3; filter: blur(3px); transform: translateY(-12px) scale(0.92) rotate(-4deg); }
+            100% { opacity: 0; filter: blur(6px); transform: translateY(-26px) scale(0.86) rotate(-8deg); }
+        }
+
+        /* 文字流星雨效果（点击弹窗时从左到右穿屏） */
+        .meteor-text {
+            position: fixed;
+            left: -160px;
+            top: 0;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.02em;
+            color: rgba(255, 255, 255, 0.96);
+            text-shadow: 0 0 8px rgba(255,255,255,0.75), 0 0 18px rgba(255,255,255,0.45);
+            pointer-events: none;
+            z-index: 1001;
+            white-space: nowrap;
+            will-change: transform, opacity, filter;
+            animation: meteorFly 4s linear forwards;
+        }
+
+        @keyframes meteorFly {
+            0%   { opacity: 0; transform: translateX(-18vw) translateY(0) skewX(-10deg); filter: blur(0.6px); }
+            10%  { opacity: 1; }
+            85%  { opacity: 1; }
+            100% { opacity: 0; transform: translateX(110vw) translateY(0) skewX(-10deg); filter: blur(1.2px); }
+        }
+
+        /* 多种颜色主题的弹窗 */
+        .popup-pink { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #fff; }
+        .popup-blue { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
+        .popup-orange { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333; }
+        .popup-green { background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%); color: #333; }
+        .popup-purple { background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); color: #333; }
+        .popup-cyan { background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); color: #fff; }
+        .popup-yellow { background: linear-gradient(135deg, #fdbb2d 0%, #22c1c3 100%); color: #fff; }
+        .popup-red { background: linear-gradient(135deg, #ff6b6b 0%, #ffa8a8 100%); color: #fff; }
+        .popup-teal { background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%); color: #fff; }
+        .popup-indigo { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; }
+        .popup-lime { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: #fff; }
+        .popup-amber { background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%); color: #333; }
+
+        /* 最终消息：无边框、纯文本大字 */
+        .final-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.18);
+            color: #0a0a0a;
+            padding: 1rem 1.6rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 14px;
+            max-width: min(720px, 86vw);
+            box-sizing: border-box;
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.02em;
+            z-index: 1001;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.9);
+            transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+            position: fixed;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.26);
+        }
+
+        /* 移除内描边高光，保持纯净无边框效果 */
+
+        .final-message.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .final-message.fadeout {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.96);
+            transition: opacity 1.8s ease, transform 1.8s ease;
+        }
+
+        @keyframes softBreath {
+            0%   { box-shadow: 0 40px 120px rgba(0,0,0,0.20); }
+            50%  { box-shadow: 0 55px 160px rgba(0,0,0,0.28); }
+            100% { box-shadow: 0 40px 120px rgba(0,0,0,0.20); }
+        }
+
+        .final-title {
+            font-size: 4rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color:#0a0a0a;
+        }
+        .final-name {
+            -webkit-background-clip: text;
+            background-clip: text;
+            color:#0a0a0a;
+            font-family: 'STKaiti','KaiTi','SimKai','Songti SC','NSimSun','宋体','Playfair Display',serif;
+        }
+        .final-hello { color: #333; }
+        .final-sub { margin-top: 0.8rem; font-size: 1rem; color: rgba(0,0,0,0.6); }
+
+        /* 重新放置到样式块内的重启按钮样式 */
+        .restart-btn {
+            position: fixed;
+            left: 50%;
+            bottom: 48px;
+            transform: translateX(-50%);
+            padding: 0.8rem 1.6rem;
+            border: none;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.14);
+            color: #ffffff;
+            letter-spacing: 0.08em;
+            text-transform: none;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            opacity: 0;
+            transition: all 0.6s ease;
+            z-index: 1002;
+        }
+
+        .restart-btn.show { opacity: 1; }
+        .restart-btn:hover { background: rgba(255,255,255,0.22); transform: translateX(-50%) translateY(-2px); }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 2.5rem;
+                margin-bottom: 3rem;
+            }
+
+            .name-input {
+                width: 300px;
+                font-size: 1.1rem;
+            }
+
+            .message-popup {
+                width: 220px;
+                min-height: 74px;
+                padding: 1.2rem 1.5rem;
+                font-size: 0.95rem;
+            }
+
+            .final-message {
+                font-size: 1.4rem;
+                padding: 0.6rem 1rem;
+                margin: 0 1rem;
+                max-width: 90vw;
+            }
+            .final-title { font-size: 3rem; }
+            .final-name { font-weight: 700; }
+
+            .restart-btn {
+                bottom: calc(22px + env(safe-area-inset-bottom));
+                padding: 0.9rem 1.4rem;
+                min-width: 56vw;
+                font-size: 0.95rem;
+            }
+
+            .meteor-text { font-size: 1rem; animation-duration: 2.4s; }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-title {
+                font-size: 2rem;
+            }
+
+            .name-input {
+                width: 250px;
+            }
+
+            .message-popup {
+                width: 200px;
+                min-height: 68px;
+                padding: 1rem 1.2rem;
+                font-size: 0.9rem;
+            }
+            .final-title { font-size: 2.4rem; }
+            .final-message { max-width: 92vw; }
+            .final-name {
+                color: #0a0a0a;
+                background: none;
+                -webkit-background-clip: initial;
+                background-clip: initial;
+            }
+            .restart-btn {
+                bottom: calc(18px + env(safe-area-inset-bottom));
+                padding: 0.9rem 1.2rem;
+                min-width: 72vw;
+                font-size: 1rem;
+            }
+
+            .meteor-text { font-size: 0.95rem; animation-duration: 2.2s; }
+        }
+    </style>
+</head>
+<body>
+    <div class="luxury-bg"></div>
+
+    <div class="welcome-screen" id="welcomeScreen">
+        <h1 class="welcome-title">Have a good Day</h1>
+        <div class="input-container">
+            <p class="input-label">请输入您的姓名</p>
+            <input type="text" class="name-input" id="nameInput" placeholder="姓名" maxlength="20">
+            <button class="start-btn" onclick="startRomance()">开始</button>
+        </div>
+    </div>
+
+    <div class="final-message" id="finalMessage"></div>
+
+    <script>
+        let userName = '';
+        let messageCount = 0;
+        let maxMessages = 640; // 加倍上限，速度保持不变
+        let finalShown = false; // 防止最终消息重复显示
+        let isActive = false;
+        let popupInterval;
+        let replenishInterval = null;
+        let lingerModeActive = false;
+        let lingerGenerateTimer = null;
+        let lingerDismissTimer = null;
+
+        // 使用照片中的文案内容
+        const romanticMessages = [
+            "多喝水哦",
+            "保持微笑呀",
+            "每天都要元气满满",
+            "记得吃水果",
+            "保持好心情",
+            "好好爱自己",
+            "我想你了",
+            "梦想成真",
+            "期待下一次见面",
+            "金榜题名",
+            "顺顺利利",
+            "早点休息",
+            "愿所有烦恼都消失",
+            "别熬夜",
+            "今天过得开心嘛",
+            "天冷了，多穿衣服",
+            "晚安"
+        ];
+
+        const themes = [
+            'popup-pink', 'popup-blue', 'popup-orange', 'popup-green',
+            'popup-purple', 'popup-cyan', 'popup-yellow', 'popup-red',
+            'popup-teal', 'popup-indigo', 'popup-lime', 'popup-amber'
+        ];
+
+        function startRomance() {
+            userName = document.getElementById('nameInput').value.trim();
+            if (!userName) {
+                document.getElementById('nameInput').style.borderBottomColor = 'rgba(255, 100, 100, 0.8)';
+                setTimeout(() => {
+                    document.getElementById('nameInput').style.borderBottomColor = 'rgba(255, 255, 255, 0.2)';
+                }, 1000);
+                return;
+            }
+
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            isActive = true;
+
+            // 开始超快速多弹窗效果
+            setTimeout(() => {
+                startMultiplePopups();
+            }, 1000);
+        }
+
+        function startMultiplePopups() {
+            // 连续随机：每组6-9个，组内随机错峰，组间随机间隔
+            const scheduleBurst = () => {
+                if (messageCount >= maxMessages || !isActive) {
+                    if (popupInterval) clearTimeout(popupInterval);
+                    setTimeout(showFinalMessage, 1200);
+                    return;
+                }
+
+                // 屏幕覆盖率检测，达到阈值则停止快速创建
+                if (checkScreenCoverage(0.8) && messageCount > 120) {
+                    if (popupInterval) clearTimeout(popupInterval);
+                    // 进入补充模式：少量补齐，保持覆盖率稳定
+                    replenishInterval = setInterval(() => {
+                        if (document.querySelectorAll('.message-popup').length < 120 && isActive) {
+                            createMessagePopup();
+                        }
+                    }, 1200);
+                    // 覆盖率达标后立即显示最终消息
+                    showFinalMessage();
+                    return;
+                }
+
+                // 组内弹窗随机错峰创建
+                const popupCount = Math.floor(Math.random() * 4) + 6; // 6-9个
+                let elapsed = 0;
+                for (let i = 0; i < popupCount && messageCount < maxMessages; i++) {
+                    const jitter = Math.floor(Math.random() * 120) + 35; // 35–155ms
+                    elapsed += jitter;
+                    setTimeout(() => {
+                        if (isActive) createMessagePopup();
+                    }, elapsed);
+                }
+
+                // 组间随机间隔，避免整批整点感
+                const nextWait = Math.floor(Math.random() * 140) + 140; // 140–280ms
+                popupInterval = setTimeout(scheduleBurst, elapsed + nextWait);
+            };
+
+            scheduleBurst();
+        }
+
+        function createMessagePopup() {
+            // 在持续模式下忽略总生成上限，确保后期仍可少量生成
+            if (!isActive || (!lingerModeActive && messageCount >= maxMessages)) return;
+
+            const popup = document.createElement('div');
+            const theme = themes[Math.floor(Math.random() * themes.length)];
+            popup.className = `message-popup ${theme}`;
+
+            const message = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
+            popup.textContent = message;
+
+            // 全程随机位置算法，确保真正覆盖整个屏幕
+            const popupWidth = 260; // 与CSS一致
+            const popupHeight = 82; // 与CSS一致
+            const maxX = Math.max(0, window.innerWidth - popupWidth);
+            const maxY = Math.max(0, window.innerHeight - popupHeight);
+
+            // 随机分布，实现层叠效果（带少量随机偏移）
+            const jitterX = Math.random() * 40 - 20;
+            const jitterY = Math.random() * 20 - 10;
+            let x = Math.random() * maxX + jitterX;
+            let y = Math.random() * maxY + jitterY;
+
+            popup.style.left = Math.min(x, maxX) + 'px';
+            popup.style.top = Math.min(y, maxY) + 'px';
+
+            // 点击消失事件：涟漪 + 优雅退出 + 文字流星雨
+            popup.addEventListener('click', function() {
+                const rect = this.getBoundingClientRect();
+                const y = rect.top + rect.height / 2 + (Math.random() * 12 - 6);
+                spawnMeteor(this.textContent, y);
+                this.classList.add('clicked');
+                this.classList.add('removing');
+                setTimeout(() => {
+                    if (this.parentNode) {
+                        this.remove();
+                    }
+                }, 700);
+            });
+
+            document.body.appendChild(popup);
+            messageCount++;
+
+            // 弹窗永久保留，实现层层叠加效果
+        }
+
+        function formatName(name) {
+            if (!name) return '';
+            const n = name.trim();
+            const hasLatin = /[A-Za-z]/.test(n);
+            if (hasLatin) {
+                return n.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+            }
+            return n; // 中文名保持原样
+        }
+
+        function restartExperience() {
+            location.reload();
+        }
+
+        // 文字流星雨：从屏幕左侧向右穿屏
+        function spawnMeteor(text, y) {
+            if (!text) return;
+            const meteor = document.createElement('div');
+            meteor.className = 'meteor-text';
+            meteor.textContent = text;
+            const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
+            const safeY = clamp(y || (window.innerHeight / 2), 18, window.innerHeight - 22);
+            meteor.style.top = `${safeY}px`;
+            document.body.appendChild(meteor);
+            // 随机字号：以当前字号为最小值，随机放大（更大的流星更醒目）
+            try {
+                const basePx = parseFloat(getComputedStyle(meteor).fontSize) || 16;
+                const factor = 1 + Math.random() * 0.8; // 1.0–1.8倍，可按需调整上限
+                meteor.style.fontSize = (basePx * factor) + 'px';
+            } catch (e) { /* 安全忽略 */ }
+            meteor.addEventListener('animationend', () => {
+                if (meteor && meteor.parentNode) meteor.remove();
+            });
+        }
+
+        function showFinalMessage() {
+            if (finalShown) return;
+            finalShown = true;
+            setTimeout(() => {
+                const finalMsg = document.getElementById('finalMessage');
+                finalMsg.innerHTML = `
+                    <div class="final-title">初次见面，<span class="final-name">${formatName(userName)}</span></div>
+                `;
+                finalMsg.classList.add('show');
+
+                // 3秒后淡出，先预清屏（清掉80%），再进入持续模式
+                setTimeout(() => {
+                    finalMsg.classList.add('fadeout');
+                    // 移除最终消息后先执行预清屏，再进入持续模式
+                    setTimeout(() => {
+                        if (finalMsg && finalMsg.parentNode) finalMsg.remove();
+                        beginPartialDismiss(0.8, beginLingerMode);
+                    }, 1800);
+                }, 3000);
+            }, 600);
+        }
+
+        // 预清屏：清除当前弹窗的指定比例（默认80%），保留部分后进入下一阶段
+        function beginPartialDismiss(rate = 0.8, done) {
+            // 停止任何生成与补充，避免预清屏期间新增弹窗
+            isActive = false;
+            if (popupInterval) clearTimeout(popupInterval);
+            if (replenishInterval) clearInterval(replenishInterval);
+            if (typeof lingerGenerateTimer !== 'undefined' && lingerGenerateTimer) clearInterval(lingerGenerateTimer);
+            if (typeof lingerDismissTimer !== 'undefined' && lingerDismissTimer) clearInterval(lingerDismissTimer);
+
+            const popups = Array.from(document.querySelectorAll('.message-popup'));
+            const total = popups.length;
+            const toDismissCount = Math.max(0, Math.floor(total * rate));
+            if (toDismissCount === 0) {
+                if (typeof done === 'function') done();
+                return;
+            }
+
+            // 随机挑选目标，以错峰节奏依次点击消失并触发流星
+            const shuffled = popups.sort(() => Math.random() - 0.5);
+            const targets = shuffled.slice(0, toDismissCount);
+            targets.forEach((p, i) => {
+                setTimeout(() => {
+                    if (!p.classList.contains('removing')) {
+                        const rect = p.getBoundingClientRect();
+                        const y = rect.top + rect.height / 2 + (Math.random() * 16 - 8);
+                        spawnMeteor(p.textContent, y);
+                        p.classList.add('clicked');
+                        p.classList.add('removing');
+                        setTimeout(() => { if (p.parentNode) p.remove(); }, 700);
+                    }
+                }, i * 45);
+            });
+
+            const totalDelay = toDismissCount * 45 + 900;
+            setTimeout(() => { if (typeof done === 'function') done(); }, totalDelay);
+        }
+
+        // 持续模式：保留部分弹窗，慢速生成新弹窗，同时慢速自动点击消失（生成略快于消失）
+        function beginLingerMode() {
+            lingerModeActive = true;
+            // 停止此前的生成器，独立进入持续模式
+            if (popupInterval) clearTimeout(popupInterval);
+            if (replenishInterval) clearInterval(replenishInterval);
+            isActive = true; // 允许 createMessagePopup 工作
+
+            const lingerCap = 160; // 屏幕上最多保留的弹窗数量
+
+            // 慢速生成：每600ms生成1-2个，组内有错峰
+            const genBurst = () => {
+                // 持续模式下不受 maxMessages 限制，仅受屏幕保留上限控制
+                if (!lingerModeActive) return;
+                const extra = Math.floor(Math.random() * 2) + 1; // 1–2 个
+                for (let i = 0; i < extra; i++) {
+                    const jitter = Math.floor(Math.random() * 120) + 50; // 50–170ms
+                    setTimeout(() => {
+                        if (lingerModeActive && isActive && document.querySelectorAll('.message-popup').length < lingerCap) {
+                            createMessagePopup();
+                        }
+                    }, jitter);
+                }
+            };
+            lingerGenerateTimer = setInterval(genBurst, 600);
+
+            // 慢速自动点击消失：每900ms随机点击一个
+            lingerDismissTimer = setInterval(() => {
+                if (!lingerModeActive) return;
+                const popups = Array.from(document.querySelectorAll('.message-popup'));
+                if (popups.length) {
+                    const idx = Math.floor(Math.random() * popups.length);
+                    const p = popups[idx];
+                    if (!p.classList.contains('removing')) {
+                        const rect = p.getBoundingClientRect();
+                        const y = rect.top + rect.height / 2 + (Math.random() * 16 - 8);
+                        spawnMeteor(p.textContent, y);
+                        p.classList.add('clicked');
+                        p.classList.add('removing');
+                        setTimeout(() => { if (p.parentNode) p.remove(); }, 700);
+                    }
+                }
+            }, 900);
+
+            // 持续模式开始后立即显示按钮（不做最终清空，效果持续运行）
+            setTimeout(() => {
+                showRestartButton();
+            }, 1200);
+        }
+
+        function beginAutoDismiss() {
+            // 停止生成
+            isActive = false;
+            if (popupInterval) clearTimeout(popupInterval);
+            if (replenishInterval) clearInterval(replenishInterval);
+
+            const popups = Array.from(document.querySelectorAll('.message-popup'));
+            popups.forEach((p, i) => {
+                setTimeout(() => {
+                    if (!p.classList.contains('removing')) {
+                        const rect = p.getBoundingClientRect();
+                        const y = rect.top + rect.height / 2 + (Math.random() * 16 - 8);
+                        spawnMeteor(p.textContent, y);
+                        p.classList.add('clicked');
+                        p.classList.add('removing');
+                        setTimeout(() => { if (p.parentNode) p.remove(); }, 700);
+                    }
+                }, i * 40);
+            });
+
+            const totalDelay = popups.length * 40 + 900;
+            setTimeout(() => {
+                showRestartButton();
+            }, totalDelay);
+        }
+
+        function showRestartButton() {
+            const restartBtn = document.createElement('button');
+            restartBtn.className = 'restart-btn';
+            restartBtn.textContent = 'Have a good Day';
+            document.body.appendChild(restartBtn);
+            setTimeout(() => restartBtn.classList.add('show'), 50);
+            restartBtn.addEventListener('click', restartExperience);
+        }
+
+        // 覆盖率检测：计算所有弹窗面积与屏幕面积的比例
+        function checkScreenCoverage(threshold = 0.35) {
+            const popups = document.querySelectorAll('.message-popup');
+            const screenArea = window.innerWidth * window.innerHeight;
+            let coveredArea = 0;
+
+            popups.forEach(p => {
+                const w = p.offsetWidth;
+                const h = p.offsetHeight;
+                coveredArea += w * h;
+            });
+
+            return (coveredArea / screenArea) >= threshold;
+        }
+
+        // 回车键启动
+        document.getElementById('nameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                startRomance();
+            }
+        });
+
+        // 防止页面滚动
+        document.addEventListener('wheel', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        document.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html>
